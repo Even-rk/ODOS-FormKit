@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Even-rk/ODOS-UI"
+    "url": "git+https://github.com/Even-rk/ODOS-FormKit"
   },
   "scripts": {
     "dev": "vite --host",
