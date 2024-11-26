@@ -1,0 +1,12 @@
+[
+  {
+    "compName": "useComp",
+    "compZhName": "快速上手",
+    "compClassName": "useComp"
+  },
+  {
+    "compName": "FormKit",
+    "compZhName": "FormKit表单",
+    "compClassName": "formKit"
+  }
+]

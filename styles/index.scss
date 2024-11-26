@@ -1,0 +1,11 @@
+.odos-formkit {
+  width: 100%;
+  .odos-formkit-item {
+    margin: 12px 0;
+    width: 100%;
+    // 下拉框
+    :deep .ant-select {
+      width: 100%;
+    }
+  }
+}
