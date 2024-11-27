@@ -94,7 +94,6 @@ import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
 // 单行文本框
-import Input from './input/input.vue'
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 

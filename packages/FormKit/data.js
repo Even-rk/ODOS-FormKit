@@ -15,7 +15,7 @@ export default {
       dropdownType: '多选',
       hasRequired: true,
       hasInverseSelection: false,
-      hasMutuallyExclusive: false,
+      hasMutuallyExclusive: true,
       hasDisabled: false,
       questionLevel: '1',
       parentId: null,

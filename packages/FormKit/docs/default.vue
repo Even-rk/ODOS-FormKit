@@ -2,7 +2,7 @@
   <div class="odos-formkit">
     <odos-form-kit
       ref="formRef"
-      theme="dark"
+      theme="light"
       v-model:value="FormValue"
       label-width="120px"
       :form-data="formKitData"

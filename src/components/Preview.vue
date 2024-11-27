@@ -62,9 +62,6 @@ pre {
   }
 }
 
-.source-code {
-  max-height: 500px;
-}
 .language-html {
   margin: 0;
   padding: 0 15px;
