@@ -1,52 +1,39 @@
 <template>
-  <div class="odos-input" :class="{ 'odos-input-disabled': disabled }" :style="{ width: WidthSize }">
-    <div class="odos-input-title" v-if="title">{{ title }}</div>
+  <div class="odos-input" :class="{ 'odos-input-disabled': disabled, dark: theme == 'dark' }">
     <input
       :style="inputStyle"
-      :class="{ 'odos-input-isTitle': title }"
       :type="typeName || 'text'"
       :value="value"
       :disabled="disabled"
-      @change="emit('change', $event)"
-      @focus="emit('focus', $event)"
-      @blur="handelBlur"
       @input="handleInput"
       :placeholder="placeholder || '请输入'"
     />
-    <div v-if="type" class="odos-icon" :class="{ 'odos-search-icon': type == 'search' }" @click="iconClick">
-      <Icon :name="iconName" color="#86909c" />
-    </div>
-    <div class="odos-unit">
-      {{ unit }}
+    <div
+      v-if="type && type !== 'text'"
+      class="odos-icon"
+      :class="{ 'odos-search-icon': type == 'search' }"
+      @click="iconClick"
+    >
+      <Icon :name="iconName" :color="theme == 'dark' ? 'rgba(255, 255, 255, 0.5)' : '#86909c'" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onUpdated, ref } from 'vue'
-import Icon from '../../Icon/src/index.vue'
+import { computed, ref } from 'vue'
+import Icon from '../icon/index.vue'
 
 const emit = defineEmits<{
   (e: 'update:value' | 'search', data: string): void
   (e: 'input' | 'focus' | 'change' | 'blur', data: Event): void
 }>()
 
-const focusRef = ref()
-onUpdated(() => {
-  if (isFocus) {
-    focusRef.value.focus()
-  }
-})
-
-const { value, width, placeholder, disabled, isFocus, title, type, unit } = defineProps<{
+const { value, placeholder, disabled, type } = defineProps<{
   type?: 'text' | 'password' | 'search'
   value?: string
-  width?: string | number
   placeholder?: string
   disabled?: boolean
-  isFocus?: boolean
-  title?: string
-  unit?: string
+  theme?: 'light' | 'dark'
 }>()
 const Type = ref(type)
 // typeName
@@ -59,7 +46,7 @@ const iconName = computed(() => {
 })
 // inputStyle
 const inputStyle = computed(() => {
-  if (type === 'password' || type === 'search' || unit) {
+  if (type === 'password' || type === 'search') {
     return {
       paddingRight: '35px'
     }
@@ -74,24 +61,9 @@ const iconClick = () => {
     Type.value = 'password'
   }
 }
-
-const WidthSize = computed(() => {
-  const widthSize = ref('')
-  if (typeof width === 'number') {
-    widthSize.value = `${width}px`
-  } else if (typeof width === 'string') {
-    widthSize.value = width
-  }
-  return widthSize.value
-})
-
+// 处理input事件
 const handleInput = (e: Event) => {
   emit('update:value', (e.target as HTMLInputElement).value)
-  emit('input', e)
-}
-
-const handelBlur = ($event: Event) => {
-  emit('blur', $event)
 }
 </script>
 
@@ -109,10 +81,10 @@ const handelBlur = ($event: Event) => {
     align-items: center;
     border-radius: 8px;
     padding: 10px 16px;
-    background: #f2f3f5;
     width: 100%;
     height: 100%;
     border: 1px solid #f2f3f5;
+    background: #f2f3f5;
     outline: none;
 
     &:hover {
@@ -127,10 +99,6 @@ const handelBlur = ($event: Event) => {
     &::placeholder {
       color: #86909c;
     }
-
-    &.odos-input-isTitle {
-      padding-left: 88px;
-    }
   }
 
   .odos-icon {
@@ -143,25 +111,6 @@ const handelBlur = ($event: Event) => {
     }
   }
 
-  .odos-unit {
-    position: absolute;
-    right: 12px;
-  }
-
-  .odos-input-title {
-    position: absolute;
-    width: 80px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    font-size: 14px;
-    color: #4e5969;
-    border-right: 1px solid #c9cdd4;
-    z-index: 1;
-  }
-
   &.odos-input-disabled {
     background: #f2f3f5;
     border-radius: 8px;
@@ -169,6 +118,42 @@ const handelBlur = ($event: Event) => {
     input:hover {
       cursor: not-allowed;
       background: #f2f3f5;
+    }
+  }
+}
+
+.odos-input.dark {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+
+  input {
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    border-radius: 8px;
+    padding: 10px 16px;
+    background: #666666;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    border: 1px solid transparent;
+    outline: none;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .odos-icon {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+
+    &.odos-search-icon {
+      cursor: auto;
     }
   }
 }

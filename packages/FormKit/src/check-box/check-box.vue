@@ -8,6 +8,7 @@
 import { ref, useSlots } from 'vue'
 
 const props = defineProps<{
+  content?: string
   value?: number[]
   mutex?: boolean
   // 主题
@@ -15,20 +16,22 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:value', data?: string[] | number[]): void
+  (e: 'update:value', data?: number[]): void
+  (e: 'update:content', data?: string): void
 }>()
 
 type Item = {
   props: {
-    label?: string | number
-    value?: string | number
+    label?: string
+    value?: number
     alarm?: boolean
     disabled?: boolean
     mutexList?: number[]
   }
 }
-
+// 获取插槽
 const slots = useSlots()
+// 渲染内容
 const randerContent = () => {
   const list = ref([] as Item[])
   list.value = (slots.default && slots.default()) as Item[]
@@ -38,7 +41,16 @@ const randerContent = () => {
     return CheckBoxItem(list.value)
   }
 }
+// 处理其他
+const handleOther = (list: Item[], val?: number[]) => {
+  if (!list.some((i) => i.props.label == '其他' && val?.includes(i.props.value as number))) {
+    emit('update:content', '')
+  } else {
+    emit('update:content', props.content)
+  }
+}
 
+// 多选项
 const CheckBoxItem = (list: Item[]) => {
   return (
     <>
@@ -56,6 +68,7 @@ const CheckBoxItem = (list: Item[]) => {
             // 如果props.value数组已经包含了当前项（it.props.value），则从数组中移除这个项。
             if (props.value?.includes(it.props.value as never)) {
               props.value.splice(props.value.indexOf(it.props.value as never), 1)
+              handleOther(list, props.value)
               emit('update:value', props.value)
             }
             // 如果props.value数组中不包含当前项，则将这个项添加到数组的末尾。
@@ -66,12 +79,14 @@ const CheckBoxItem = (list: Item[]) => {
                 const newValue = props.value?.filter((item) => {
                   return !it.props.mutexList?.includes(item)
                 })
+                handleOther(list, newValue)
                 // 数组清空
                 emit('update:value', newValue)
               }
               // 如果不是互斥内容，直接添加到数组中
               else {
                 props.value?.push(it.props.value as never)
+                handleOther(list, props.value)
                 emit('update:value', props.value)
               }
             }
@@ -81,6 +96,16 @@ const CheckBoxItem = (list: Item[]) => {
           {list[index]}
         </div>
       ))}
+      {/* 其他输入 */}
+      {list.some((i) => i.props.label == '其他' && props.value?.includes(i.props.value as number)) && (
+        <input
+          class="odos-check-box-input"
+          placeholder="请输入"
+          onInput={(e) => {
+            emit('update:content', (e.target as HTMLInputElement).value)
+          }}
+        />
+      )}
     </>
   )
 }
@@ -137,6 +162,24 @@ const CheckBoxItem = (list: Item[]) => {
       }
     }
   }
+
+  :deep .odos-check-box-input {
+    width: 100px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    padding: 10px 4px;
+    height: 36px;
+    outline: none;
+    margin: 2px 1px;
+    border-radius: 0px 6px 6px 0px;
+    border: 1px solid #f2f3f5;
+    background: #f2f3f5;
+
+    &::placeholder {
+      color: #86909c;
+    }
+  }
 }
 
 .odos-check-box.dark {
@@ -187,6 +230,25 @@ const CheckBoxItem = (list: Item[]) => {
         background: #feefef;
         color: #ff4f49;
       }
+    }
+  }
+
+  :deep .odos-check-box-input {
+    width: 100px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    padding: 10px 4px;
+    background: #666666;
+    color: #fff;
+    height: 36px;
+    border: 1px solid transparent;
+    outline: none;
+    margin: 2px 1px;
+    border-radius: 0px 6px 6px 0px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }

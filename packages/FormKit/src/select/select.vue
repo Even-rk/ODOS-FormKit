@@ -135,6 +135,7 @@ const selectChange = (val: number) => {
   }
   // 输入框的样式
   :deep .ant-select {
+    width: 100%;
     height: 40px;
     // 去除边框阴影
     .ant-select-selector {
@@ -195,7 +196,7 @@ const selectChange = (val: number) => {
   align-items: center;
   // 禁用的样式
   &.odos-select-disabled:hover {
-    background: #f2f3f5;
+    background: #666;
   }
   // 输入框的样式
   :deep .ant-select {

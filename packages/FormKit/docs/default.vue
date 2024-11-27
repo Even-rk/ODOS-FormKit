@@ -7,11 +7,13 @@
       label-width="120px"
       :form-data="formKitData"
     />
+    <Button @click="submit">提交</Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
+import { Button } from 'ant-design-vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 import data from '../data'
 
@@ -26,10 +28,10 @@ const FormValue = ref([
 ] as FormKitData[])
 
 const formRef = ref()
-onMounted(async () => {
-  // const { data } = await formRef.value.submit()
-  // console.log(data)
-})
+const submit = async () => {
+  const { data } = await formRef.value.submit()
+  console.log(data)
+}
 </script>
 
 <style lang="scss" scoped>

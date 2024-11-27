@@ -1,7 +1,13 @@
 <template>
   <div class="`odos-formkit">
-    <div class="odos-formkit-item" v-for="(i, index) in formData">
-      <OdosCell
+    <div
+      class="odos-formkit-item"
+      :class="{
+        required: errorList.some((el) => el.questionId == i.id) && i.hasRequired
+      }"
+      v-for="(i, index) in formData"
+    >
+      <FormItem
         :labelPosition="i.parentId ? 'top' : 'left'"
         :theme="theme"
         :label="i.name"
@@ -24,21 +30,26 @@
         </template>
         <!-- 单选按钮 -->
         <template v-else-if="i.type == '单选按钮'">
-          <Radio v-model:value="FormValue[index].optionsList" :theme="theme">
+          <Radio
+            v-model:value="FormValue[index].optionsList"
+            v-model:content="FormValue[index].content"
+            :theme="theme"
+            :reverse="i.hasInverseSelection"
+          >
             <RadioItem
               v-for="item in i.optionsList"
               :key="item.id"
               :value="item.id"
+              :label="item.optionsName"
               :disabled="item.hasDisabled || i.hasDisabled"
-            >
-              {{ item.optionsName }}
-            </RadioItem>
+            />
           </Radio>
         </template>
         <!-- 多选按钮 -->
         <template v-else-if="i.type == '多选按钮'">
           <Checkbox
             v-model:value="FormValue[index].optionsList"
+            v-model:content="FormValue[index].content"
             :theme="theme"
             :mutex="i.hasMutuallyExclusive"
           >
@@ -46,11 +57,10 @@
               v-for="item in i.optionsList"
               :key="item.id"
               :value="item.id"
+              :label="item.optionsName"
               :disabled="item.hasDisabled || i.hasDisabled"
               :mutexList="item.mutuallyExclusiveCondition"
-            >
-              {{ item.optionsName }}
-            </CheckboxItem>
+            />
           </Checkbox>
         </template>
         <!-- 多行文本框 -->
@@ -64,17 +74,15 @@
           />
         </template>
         <!-- 校验提示 -->
-        <div class="validationMessage" v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired">
-          请选择
-        </div>
-      </OdosCell>
+        <div class="validationMessage">{{ i.validationMessage || '请选择' }}</div>
+      </FormItem>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 // 表格
-import OdosCell from './odos-cell/odos-cell.vue'
+import FormItem from './form-item/form-item.vue'
 // 单选按钮
 import Radio from './radio/radio.vue'
 import RadioItem from './radio/radio-item.vue'
@@ -85,6 +93,8 @@ import CheckboxItem from './check-box/check-box-item.vue'
 import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
+// 单行文本框
+import Input from './input/input.vue'
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 
@@ -130,14 +140,12 @@ onBeforeMount(() => {
 })
 
 // 二级/三级根据上级展示
-const isShow = (parentId?: number, parentOptionsId?: string) => {
+const isShow = (parentId?: number, parentOptionsId?: number[]) => {
   if (parentId && parentOptionsId) {
     // 找到父级
     const target = FormValue.value.find((i) => i.questionId == parentId)
-    // 找到父级的选项id
-    const parentIdList = parentOptionsId.split(',')
     // 过滤出选项
-    const list = target?.optionsList?.filter((i) => parentIdList.includes(i.toString()))
+    const list = target?.optionsList?.filter((i) => parentOptionsId.includes(i))
     if (!!list?.length) {
       return true
     } else {
@@ -151,16 +159,36 @@ const isShow = (parentId?: number, parentOptionsId?: string) => {
 // 表单提交
 const errorList = ref<FormKitData[]>([])
 const isRequired = ref(false)
-const submit = () => {
-  isRequired.value = true
-  return new Promise<FormKitData[]>((resolve, reject) => {
+// 错误提交
+const updateError = (flag?: boolean) => {
+  errorList.value = []
+  return new Promise<void>((resolve) => {
     formData?.map((i, index) => {
-      if (i?.hasRequired) {
+      // 一级选项
+      if (i?.hasRequired && !i.parentId) {
         if (FormValue.value[index].optionsList!.length <= 0) {
           errorList.value.push(FormValue.value[index])
         }
       }
+      // 次级选项
+      else if (i?.hasRequired && i.parentId && flag) {
+        // 找到父级
+        const target = FormValue.value.find((el) => el.questionId == i.parentId)
+        if (target?.optionsList?.some((el) => i.parentOptionsId?.includes(el))) {
+          if (FormValue.value[index].optionsList!.length <= 0) {
+            errorList.value.push(FormValue.value[index])
+          }
+        }
+      }
     })
+    resolve()
+  })
+}
+// 提交
+const submit = () => {
+  isRequired.value = true
+  return new Promise<FormKitData[]>(async (resolve, reject) => {
+    await updateError(true)
     nextTick(() => {
       if (errorList.value.length > 0) {
         reject(errorList.value)
@@ -181,22 +209,44 @@ const reset = () => {
   }) as FormKitData[]
 }
 // 表单值
+// 预防侦听超过递归限制 Maximum
+const isNext = ref(true)
 watch(
   FormValue,
-  (newValue) => {
+  async (newValue) => {
     if (isRequired.value) {
-      errorList.value = []
-      formData?.map((i, index) => {
-        if (i?.hasRequired) {
-          if (FormValue.value[index].optionsList!.length <= 0) {
-            errorList.value.push(FormValue.value[index])
+      await updateError(false)
+      emit('update:value', newValue)
+    } else if (isNext.value) {
+      isNext.value = false
+      FormValue.value = FormValue.value.map((i, index) => {
+        if (formData![index].parentId) {
+          // 找到父级
+          const target = FormValue.value.find((el) => el.questionId == formData![index].parentId)
+          // 如果选中了父级，返回选项和内容
+          const flag = target?.optionsList?.some((el) => formData![index].parentOptionsId?.includes(el))
+          if (flag) {
+            return i
+          } else {
+            return {
+              questionId: i.questionId,
+              optionsList: [],
+              content: ''
+            }
           }
+        } else {
+          return i
         }
       })
+      emit('update:value', FormValue.value)
+      setTimeout(() => {
+        isNext.value = true
+      }, 500)
+    } else {
+      emit('update:value', newValue)
     }
-    emit('update:value', newValue)
   },
-  { deep: true }
+  { deep: true, immediate: false }
 )
 // 暴露方法
 defineExpose({ submit, reset })

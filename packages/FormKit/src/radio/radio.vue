@@ -8,14 +8,18 @@
 import { ref, useSlots } from 'vue'
 
 const props = defineProps<{
+  content?: string
   value?: number[]
   itemWidth?: string
+  // 反选择
+  reverse?: boolean
   // 主题
   theme?: 'light' | 'dark'
 }>()
 
 const emit = defineEmits<{
   (e: 'update:value' | 'change', data?: number[]): void
+  (e: 'update:content', data: string): void
 }>()
 
 type Item = {
@@ -52,6 +56,7 @@ const RadioItem = (list: Item[]) => {
           onClick={() => {
             if (it.props.disabled) return
             if (it.props.value === props.value![0]) {
+              if (!props.reverse) return
               emit('update:value', [])
             } else {
               emit('update:value', [it.props.value as number])
@@ -62,6 +67,16 @@ const RadioItem = (list: Item[]) => {
           {list[index]}
         </div>
       ))}
+
+      {list.some((i) => i.props.label == '其他' && props.value?.includes(i.props.value as number)) && (
+        <input
+          class="odos-radio-box-input"
+          placeholder="请输入"
+          onInput={(e) => {
+            emit('update:content', (e.target as HTMLInputElement).value)
+          }}
+        />
+      )}
     </>
   )
 }
@@ -119,6 +134,24 @@ const RadioItem = (list: Item[]) => {
       }
     }
   }
+
+  :deep .odos-check-box-input {
+    width: 100px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    padding: 10px 4px;
+    height: 36px;
+    outline: none;
+    margin: 2px 1px;
+    border-radius: 0px 6px 6px 0px;
+    border: 1px solid #f2f3f5;
+    background: #f2f3f5;
+
+    &::placeholder {
+      color: #86909c;
+    }
+  }
 }
 
 .odos-radio.dark {
@@ -170,6 +203,25 @@ const RadioItem = (list: Item[]) => {
         background: #feefef;
         color: #ff4f49;
       }
+    }
+  }
+
+  :deep .odos-radio-box-input {
+    width: 100px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    padding: 10px 4px;
+    background: #666666;
+    color: #fff;
+    height: 36px;
+    border: 1px solid transparent;
+    outline: none;
+    margin: 2px 1px;
+    border-radius: 0px 6px 6px 0px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }

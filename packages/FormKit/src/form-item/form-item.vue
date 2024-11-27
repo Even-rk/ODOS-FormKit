@@ -47,9 +47,9 @@ const { height: elHeight } = useElementSize(el)
 // 类名
 const className = computed(() => {
   if (elHeight.value > 40) {
-    return 'odos-cell-multiple'
+    return 'form-item-multiple'
   } else {
-    return 'odos-cell'
+    return 'form-item'
   }
 })
 </script>
@@ -62,7 +62,7 @@ const className = computed(() => {
   font-size: 14px;
   line-height: 1;
 }
-.odos-cell {
+.form-item {
   min-height: 24px;
   display: inline-flex;
   align-items: center;
@@ -91,7 +91,7 @@ const className = computed(() => {
   }
 }
 
-.odos-cell-multiple {
+.form-item-multiple {
   min-height: 24px;
   display: inline-flex;
   margin-bottom: 12px;
@@ -125,8 +125,8 @@ const className = computed(() => {
   }
 }
 
-.odos-cell,
-.odos-cell-multiple {
+.form-item,
+.form-item-multiple {
   &.top {
     display: flex;
     flex-direction: column;

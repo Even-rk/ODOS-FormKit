@@ -4,11 +4,11 @@ export interface FormKitType {
   type?: string // 题目类型
   dropdownType?: string // 下拉框类型
   hasRequired?: boolean // '是否必选'
-  hasinverseSelection?: boolean // '是否反选'
+  hasInverseSelection?: boolean // '是否反选'
   hasMutuallyExclusive?: boolean // '是否互斥'
   questionLevel?: number // '等级'
   parentId?: number // '父级id'
-  parentOptionsId?: string // '父级选项id(id拼接的字符串)'
+  parentOptionsId?: number[] // '父级选项id(id拼接的字符串)'
   validationMessage?: string // '校验必填提示'
   placeholderContent?: string // '占位符内容'
   prompt?: string // '提示'
