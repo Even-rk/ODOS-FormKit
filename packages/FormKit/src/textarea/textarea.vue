@@ -1,6 +1,7 @@
 <template>
   <Textarea
     class="odos-textarea"
+    :class="theme"
     :placeholder="placeholder || '请输入'"
     :value="value"
     @input="$input($event)"
@@ -12,12 +13,14 @@
 <script setup lang="ts">
 import { Textarea } from 'ant-design-vue'
 import type { ChangeEvent } from 'ant-design-vue/es/_util/EventInterface'
-const { value, maxlength, disabled, placeholder } = defineProps<{
+const { value, maxlength, disabled, placeholder, theme } = defineProps<{
   value?: string
   maxlength?: number
   autoSize?: boolean
   disabled?: boolean
   placeholder?: string
+  // 主题
+  theme?: 'light' | 'dark'
 }>()
 
 const emit = defineEmits<{
@@ -51,6 +54,16 @@ const $input = (e: ChangeEvent) => {
 
   &::placeholder {
     color: #86909c;
+  }
+}
+
+.odos-textarea.dark {
+  border-color: transparent;
+  background: #666666;
+  height: 100%;
+  color: #fff;
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
   }
 }
 </style>

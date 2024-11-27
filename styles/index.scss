@@ -7,5 +7,9 @@
     :deep .ant-select {
       width: 100%;
     }
+    // 校验提示
+    .validationMessage {
+      color: #f65b56;
+    }
   }
 }

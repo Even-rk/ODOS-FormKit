@@ -1,6 +1,12 @@
 <template>
   <div class="odos-formkit">
-    <odos-form-kit ref="formRef" v-model:value="FormValue" label-width="120px" :form-data="formKitData" />
+    <odos-form-kit
+      ref="formRef"
+      theme="dark"
+      v-model:value="FormValue"
+      label-width="120px"
+      :form-data="formKitData"
+    />
   </div>
 </template>
 
@@ -20,8 +26,9 @@ const FormValue = ref([
 ] as FormKitData[])
 
 const formRef = ref()
-onMounted(() => {
-  // formRef.value.submit()
+onMounted(async () => {
+  // const { data } = await formRef.value.submit()
+  // console.log(data)
 })
 </script>
 

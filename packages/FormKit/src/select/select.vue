@@ -1,5 +1,5 @@
 <template>
-  <div class="odos-select" :class="{ 'odos-select-disabled': disabled }">
+  <div class="odos-select" :class="{ 'odos-select-disabled': disabled, dark: theme === 'dark' }">
     <Select
       @select="selectChange($event as number)"
       showArrow
@@ -16,7 +16,7 @@
     >
       <template #suffixIcon>
         <slot name="suffixIcon">
-          <Icon name="ArowDown" size="20px" />
+          <Icon name="ArowDown" size="16px" color="#fff" />
         </slot>
       </template>
       <template #notFoundContent>
@@ -32,7 +32,7 @@
 import Icon from '../icon/index.vue'
 import { Empty, Select } from 'ant-design-vue'
 import { computed, onBeforeMount, ref, nextTick } from 'vue'
-const { value, placeholder, options, disabled, multiple, mutex } = defineProps<{
+const { value, placeholder, options, disabled, multiple, mutex, theme } = defineProps<{
   value?: number[]
   placeholder?: string
   options?: { id?: number; optionsName?: string; mutuallyExclusiveCondition?: number[] }[]
@@ -109,6 +109,7 @@ const selectChange = (val: number) => {
 </script>
 
 <style lang="scss" scoped>
+// 默认样式
 .odos-select {
   height: 40px;
   position: relative;
@@ -177,6 +178,77 @@ const selectChange = (val: number) => {
     .ant-select-item {
       &:hover {
         background: #f7f8fa;
+      }
+    }
+  }
+}
+
+//  暗黑模式
+.odos-select.dark {
+  height: 40px;
+  position: relative;
+  background: #666;
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  // 禁用的样式
+  &.odos-select-disabled:hover {
+    background: #f2f3f5;
+  }
+  // 输入框的样式
+  :deep .ant-select {
+    height: 40px;
+    // 去除边框阴影
+    .ant-select-selector {
+      align-items: center;
+      height: 40px;
+      padding-left: 10px;
+
+      .ant-select-selection-placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .ant-select-selection-search {
+        display: inline-flex;
+        align-items: center;
+      }
+    }
+  }
+
+  // 多选选中的内容tag
+  :deep .ant-select-multiple {
+    .ant-select-selection-search {
+      width: 0;
+      margin-inline-start: 0;
+      color: #fff;
+    }
+    .ant-select-selection-item {
+      color: #fff;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #8a8a8a;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      * {
+        fill: #fff;
+      }
+    }
+  }
+
+  // 下拉框的样式
+  :deep .ant-select-dropdown {
+    background: #666;
+    .ant-select-item-option-selected {
+      background: transparent;
+      font-weight: 500;
+    }
+    .ant-select-item {
+      color: #fff;
+      &:hover {
+        background: #5a5a5a;
       }
     }
   }

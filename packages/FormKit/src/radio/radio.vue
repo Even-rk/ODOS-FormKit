@@ -1,5 +1,5 @@
 <template>
-  <div class="odos-radio">
+  <div :class="`odos-radio ${theme}`">
     <randerContent />
   </div>
 </template>
@@ -111,6 +111,59 @@ const RadioItem = (list: Item[]) => {
     &.active {
       background: #e7efff;
       color: #2e6ce4;
+      font-weight: bold;
+
+      &.active-alarm {
+        background: #feefef;
+        color: #ff4f49;
+      }
+    }
+  }
+}
+
+.odos-radio.dark {
+  display: inline-flex;
+  flex-wrap: wrap;
+  user-select: none;
+
+  :deep .odos-radio-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    font-size: 14px;
+    padding: 0 20px;
+    margin: 2px 1px;
+    color: #fff;
+    background: #666666;
+
+    &.disabled {
+      cursor: not-allowed;
+      color: #444444;
+
+      &:hover {
+        background: #999999;
+      }
+    }
+
+    &:first-child {
+      border-radius: 6px 0px 0px 6px;
+      margin-left: 0;
+    }
+
+    &:last-child {
+      border-radius: 0px 6px 6px 0px;
+      margin-right: 0;
+    }
+
+    &:hover {
+      background: #606060;
+    }
+
+    &.active {
+      background: #e2e2e2;
+      color: #1d1c1c;
       font-weight: bold;
 
       &.active-alarm {

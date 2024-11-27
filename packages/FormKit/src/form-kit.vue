@@ -2,7 +2,10 @@
   <div class="`odos-formkit">
     <div class="odos-formkit-item" v-for="(i, index) in formData">
       <OdosCell
+        :labelPosition="i.parentId ? 'top' : 'left'"
+        :theme="theme"
         :label="i.name"
+        :required="i.hasRequired"
         :label-width="labelWidth"
         v-if="!i.parentId || isShow(i.parentId, i.parentOptionsId)"
       >
@@ -60,6 +63,10 @@
             :maxlength="i.maxLength"
           />
         </template>
+        <!-- 校验提示 -->
+        <div class="validationMessage" v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired">
+          请选择
+        </div>
       </OdosCell>
     </div>
   </div>
@@ -121,14 +128,6 @@ onBeforeMount(() => {
     }) as FormKitData[]
   }
 })
-// 表单值
-watch(
-  FormValue,
-  (newValue) => {
-    emit('update:value', newValue)
-  },
-  { deep: true }
-)
 
 // 二级/三级根据上级展示
 const isShow = (parentId?: number, parentOptionsId?: string) => {
@@ -150,25 +149,15 @@ const isShow = (parentId?: number, parentOptionsId?: string) => {
 }
 
 // 表单提交
-const errorList = ref<
-  {
-    questionId?: number
-    errorMessage?: string
-    type?: string
-    name?: string
-  }[]
->([])
+const errorList = ref<FormKitData[]>([])
+const isRequired = ref(false)
 const submit = () => {
-  return new Promise((resolve, reject) => {
+  isRequired.value = true
+  return new Promise<FormKitData[]>((resolve, reject) => {
     formData?.map((i, index) => {
       if (i?.hasRequired) {
         if (FormValue.value[index].optionsList!.length <= 0) {
-          errorList.value.push({
-            name: i.name,
-            questionId: i.id,
-            errorMessage: i.validationMessage,
-            type: 'required'
-          })
+          errorList.value.push(FormValue.value[index])
         }
       }
     })
@@ -191,6 +180,24 @@ const reset = () => {
     }
   }) as FormKitData[]
 }
+// 表单值
+watch(
+  FormValue,
+  (newValue) => {
+    if (isRequired.value) {
+      errorList.value = []
+      formData?.map((i, index) => {
+        if (i?.hasRequired) {
+          if (FormValue.value[index].optionsList!.length <= 0) {
+            errorList.value.push(FormValue.value[index])
+          }
+        }
+      })
+    }
+    emit('update:value', newValue)
+  },
+  { deep: true }
+)
 // 暴露方法
 defineExpose({ submit, reset })
 </script>
