@@ -51,7 +51,7 @@ const RadioItem = (list: Item[]) => {
           style={{ width: props.itemWidth }}
           onClick={() => {
             if (it.props.disabled) return
-            if (it.props.value === props.value) {
+            if (it.props.value === props.value![0]) {
               emit('update:value', [])
             } else {
               emit('update:value', [it.props.value as number])

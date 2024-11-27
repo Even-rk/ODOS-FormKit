@@ -31,7 +31,6 @@
 <script setup lang="ts">
 import Icon from '../icon/index.vue'
 import { Empty, Select } from 'ant-design-vue'
-import type { DefaultOptionType, SelectValue } from 'ant-design-vue/es/select'
 import { computed, onBeforeMount, ref, nextTick } from 'vue'
 const { value, placeholder, options, disabled, multiple, mutex } = defineProps<{
   value?: number[]
@@ -74,7 +73,6 @@ const getPopupContainer = (triggerNode: Element) => {
 // 初始化值
 const selectVal = ref()
 onBeforeMount(() => {
-  console.log(value)
   if (!multiple) {
     selectVal.value = value![0]
   } else {
