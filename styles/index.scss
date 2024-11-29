@@ -3,11 +3,7 @@
   .odos-formkit-item {
     margin: 12px 0;
     width: 100%;
-
-    // 校验提示
-    .validationMessage {
-      display: none;
-    }
+    
     // 必填校验提示
     &.required {
       :deep {

@@ -74,7 +74,9 @@
           />
         </template>
         <!-- 校验提示 -->
-        <div class="validationMessage">{{ i.validationMessage || '请选择' }}</div>
+        <div class="validationMessage" v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired">
+          {{ i.validationMessage || '请选择' }}
+        </div>
       </FormItem>
     </div>
   </div>
