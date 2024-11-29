@@ -1,5 +1,5 @@
 <template>
-  <div class="`odos-formkit">
+  <div class="`odos-formkit" v-if="FormValue.length > 0">
     <div
       class="odos-formkit-item"
       :class="{
