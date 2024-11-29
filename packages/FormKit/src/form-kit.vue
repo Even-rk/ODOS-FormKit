@@ -6,6 +6,7 @@
         required: errorList.some((el) => el.questionId == i.id) && i.hasRequired
       }"
       v-for="(i, index) in formData"
+      :key="index"
     >
       <FormItem
         :labelPosition="i.parentId ? 'top' : 'left'"
@@ -96,7 +97,7 @@ import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
 // 单行文本框
-import { nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 
 // 表单数据
@@ -110,13 +111,8 @@ const props = defineProps<{
   // 主题
   theme?: 'light' | 'dark'
 }>()
-
-const {} = toRefs(props)
-
 // 表单值
-const emit = defineEmits<{
-  (e: 'update:value', data?: FormKitData[]): void
-}>()
+const emit = defineEmits(['update:value'])
 // 表单值
 const FormValue = ref<FormKitData[]>([])
 
@@ -127,7 +123,7 @@ const isShow = (parentId?: number, parentOptionsId?: number[]) => {
     const target = FormValue.value.find((i) => i.questionId == parentId)
     // 过滤出选项
     const list = target?.optionsList?.filter((i) => parentOptionsId.includes(i))
-    if (!!list?.length) {
+    if (list?.length) {
       return true
     } else {
       return false
@@ -168,8 +164,8 @@ const updateError = (flag?: boolean) => {
 // 提交
 const submit = () => {
   isRequired.value = true
-  return new Promise<FormKitData[]>(async (resolve, reject) => {
-    await updateError(true)
+  return new Promise<FormKitData[]>((resolve, reject) => {
+    updateError(true)
     nextTick(() => {
       if (errorList.value.length > 0) {
         reject(errorList.value)
@@ -205,7 +201,9 @@ watch(
           // 找到父级
           const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
           // 如果选中了父级，返回选项和内容
-          const flag = target?.optionsList?.some((el) => props.formData![index].parentOptionsId?.includes(el))
+          const flag = target?.optionsList?.some((el) => {
+            return props.formData![index].parentOptionsId?.includes(el)
+          })
           if (flag) {
             return i
           } else {
