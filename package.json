@@ -1,10 +1,10 @@
 {
   "name": "odos-form-kit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "type": "module",
-  "main": "lib/odos-formkit.umd.js",
-  "module": "lib/odos-formkit.es.js",
+  "main": "lib/odos-form-kit.umd.js",
+  "module": "lib/odos-form-kit.es.js",
   "types": "lib/packages/index.d.ts",
   "author": "kwr011024@163.com",
   "description": "odos-formkit,一套为医疗场景准备的Form表单组件",
