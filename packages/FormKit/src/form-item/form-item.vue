@@ -3,7 +3,7 @@
     :class="`${className} ${theme} ${labelPosition}`"
     :style="{
       width: width || '100%',
-      marginLeft: labelPosition == 'top' ? labelWidth || '100px' : 0
+      paddingLeft: labelPosition == 'top' ? labelWidth || '100px' : 0
     }"
     ref="el"
   >
