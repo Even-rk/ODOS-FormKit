@@ -1,5 +1,5 @@
 <template>
-  <div class="`odos-formkit" v-if="FormValue.length > 0">
+  <div class="odos-formkit" v-if="FormValue.length > 0">
     <div
       class="odos-formkit-item"
       :class="{
@@ -96,13 +96,13 @@ import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
 // 单行文本框
-import { nextTick, onBeforeMount, ref, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 
 // 表单数据
-const { formData, labelWidth, value, theme } = defineProps<{
+const props = defineProps<{
   // 表单值
-  value?: FormKitData[]
+  value: FormKitData[]
   // 表单题目数据
   formData?: FormKitType[]
   // 标签宽度
@@ -111,34 +111,14 @@ const { formData, labelWidth, value, theme } = defineProps<{
   theme?: 'light' | 'dark'
 }>()
 
+const {} = toRefs(props)
+
 // 表单值
 const emit = defineEmits<{
   (e: 'update:value', data?: FormKitData[]): void
 }>()
 // 表单值
 const FormValue = ref<FormKitData[]>([])
-onBeforeMount(() => {
-  // 处理回显数据
-  if (value && value?.length > 0) {
-    FormValue.value = formData?.map((i, index) => {
-      return {
-        questionId: value[index] ? value[index].questionId : i.id,
-        optionsList: value[index] ? value[index].optionsList : [],
-        content: value[index] ? value[index].content : ''
-      }
-    }) as FormKitData[]
-  }
-  // 没有回显数据，初始化数据
-  else {
-    FormValue.value = formData?.map((i) => {
-      return {
-        questionId: i.id,
-        optionsList: [],
-        content: ''
-      }
-    }) as FormKitData[]
-  }
-})
 
 // 二级/三级根据上级展示
 const isShow = (parentId?: number, parentOptionsId?: number[]) => {
@@ -164,7 +144,7 @@ const isRequired = ref(false)
 const updateError = (flag?: boolean) => {
   errorList.value = []
   return new Promise<void>((resolve) => {
-    formData?.map((i, index) => {
+    props.formData?.forEach((i, index) => {
       // 一级选项
       if (i?.hasRequired && !i.parentId) {
         if (FormValue.value[index].optionsList!.length <= 0) {
@@ -201,7 +181,7 @@ const submit = () => {
 }
 // 重制
 const reset = () => {
-  FormValue.value = formData?.map((i) => {
+  FormValue.value = props.formData?.map((i) => {
     return {
       questionId: i.id,
       optionsList: [],
@@ -221,11 +201,11 @@ watch(
     } else if (isNext.value) {
       isNext.value = false
       FormValue.value = FormValue.value.map((i, index) => {
-        if (formData![index].parentId) {
+        if (props.formData![index].parentId) {
           // 找到父级
-          const target = FormValue.value.find((el) => el.questionId == formData![index].parentId)
+          const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
           // 如果选中了父级，返回选项和内容
-          const flag = target?.optionsList?.some((el) => formData![index].parentOptionsId?.includes(el))
+          const flag = target?.optionsList?.some((el) => props.formData![index].parentOptionsId?.includes(el))
           if (flag) {
             return i
           } else {
@@ -249,10 +229,64 @@ watch(
   },
   { deep: true, immediate: false }
 )
+// 侦听
+const timer = ref()
+watch(
+  () => props,
+  (newVal) => {
+    clearTimeout(timer.value)
+    timer.value = setTimeout(() => {
+      // 处理回显数据
+      if (newVal.value && newVal.value?.length > 0) {
+        FormValue.value = newVal.formData?.map((i, index) => {
+          return {
+            questionId: newVal.value[index] ? newVal.value[index].questionId : i.id,
+            optionsList: newVal.value[index] ? newVal.value[index].optionsList : [],
+            content: newVal.value[index] ? newVal.value[index].content : ''
+          }
+        }) as FormKitData[]
+      }
+      // 没有回显数据，初始化数据
+      else {
+        FormValue.value = newVal.formData?.map((i) => {
+          return {
+            questionId: i.id,
+            optionsList: [],
+            content: ''
+          }
+        }) as FormKitData[]
+      }
+    }, 500)
+  },
+  { deep: true }
+)
 // 暴露方法
 defineExpose({ submit, reset })
 </script>
 
 <style scoped lang="scss">
-@import '/styles/index.scss';
+.odos-formkit {
+  width: 100%;
+  .odos-formkit-item {
+    margin: 12px 0;
+    width: 100%;
+    &:first-child {
+      margin-top: 0;
+    }
+
+    // 必填校验提示
+    &.required {
+      :deep {
+        .odos-select,
+        .odos-textarea {
+          border: 1px solid #f65b56;
+        }
+      }
+      .validationMessage {
+        display: block;
+        color: #f65b56;
+      }
+    }
+  }
+}
 </style>

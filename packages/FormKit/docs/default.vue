@@ -7,17 +7,17 @@
       label-width="120px"
       :form-data="formKitData"
     />
-    <Button @click="submit">提交</Button>
+    <Button>提交</Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Button } from 'ant-design-vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 import data from '../data'
 
-const formKitData = data.data as unknown as FormKitType[]
+const formKitData = ref([] as FormKitType[])
 
 const FormValue = ref([
   {
@@ -28,10 +28,13 @@ const FormValue = ref([
 ] as FormKitData[])
 
 const formRef = ref()
-const submit = async () => {
-  const { data } = await formRef.value.submit()
-  console.log(data)
-}
+onMounted(async () => {
+  formKitData.value = await new Promise<FormKitType[]>((resolve) => {
+    setTimeout(() => {
+      resolve(data.data as unknown as FormKitType[])
+    }, 1000)
+  })
+})
 </script>
 
 <style lang="scss" scoped>
