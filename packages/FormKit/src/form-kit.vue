@@ -187,6 +187,46 @@ const reset = () => {
 }
 // 表单值
 // 预防侦听超过递归限制 Maximum
+const isNext = ref(true)
+watch(
+  FormValue,
+  async (newValue) => {
+    if (isRequired.value) {
+      await updateError(false)
+      emit('update:value', newValue)
+    } else if (isNext.value) {
+      isNext.value = false
+      FormValue.value = FormValue.value.map((i, index) => {
+        if (props.formData![index].parentId) {
+          // 找到父级
+          const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
+          // 如果选中了父级，返回选项和内容
+          const flag = target?.optionsList?.some((el) => {
+            return props.formData![index].parentOptionsId?.includes(el)
+          })
+          if (flag) {
+            return i
+          } else {
+            return {
+              questionId: i.questionId,
+              optionsList: [],
+              content: ''
+            }
+          }
+        } else {
+          return i
+        }
+      })
+      emit('update:value', FormValue.value)
+      setTimeout(() => {
+        isNext.value = true
+      }, 500)
+    } else {
+      emit('update:value', newValue)
+    }
+  },
+  { deep: true, immediate: false }
+)
 // 侦听
 const timer = ref()
 watch(
@@ -214,7 +254,7 @@ watch(
           }
         }) as FormKitData[]
       }
-    }, 300)
+    }, 500)
   },
   { deep: true }
 )
