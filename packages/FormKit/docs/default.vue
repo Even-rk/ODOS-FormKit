@@ -22,7 +22,92 @@ const formKitData = ref([] as FormKitType[])
 const FormValue = ref([
   {
     questionId: 1,
-    optionsList: [1],
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 2,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 3,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 4,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 5,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 6,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 7,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 8,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 9,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 10,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 11,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 12,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 13,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 14,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 15,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 16,
+    optionsList: [],
+    content: ''
+  },
+  {
+    questionId: 17,
+    optionsList: [999],
+    content: 'AAAA'
+  },
+  {
+    questionId: 18,
+    optionsList: [],
     content: ''
   }
 ] as FormKitData[])

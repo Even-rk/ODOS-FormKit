@@ -99,6 +99,7 @@ const CheckBoxItem = (list: Item[]) => {
       {/* 其他输入 */}
       {list.some((i) => i.props.label == '其他' && props.value?.includes(i.props.value as number)) && (
         <input
+          value={props.content}
           class="odos-check-box-input"
           placeholder="请输入"
           onInput={(e) => {
