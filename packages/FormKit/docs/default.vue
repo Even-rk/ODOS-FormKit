@@ -1,5 +1,5 @@
 <template>
-  <div class="odos-formkit">
+  <div class="odos-formkit" v-if="loading">
     <odos-form-kit
       ref="formRef"
       theme="light"
@@ -7,7 +7,7 @@
       label-width="120px"
       :form-data="formKitData"
     />
-    <Button>提交</Button>
+    <Button @click="subMit">提交</Button>
   </div>
 </template>
 
@@ -112,6 +112,7 @@ const FormValue = ref([
   }
 ] as FormKitData[])
 
+const loading = ref(true)
 const formRef = ref()
 onMounted(async () => {
   formKitData.value = await new Promise<FormKitType[]>((resolve) => {
@@ -120,6 +121,13 @@ onMounted(async () => {
     }, 1000)
   })
 })
+
+const subMit = () => {
+  loading.value = false
+  setTimeout(() => {
+    loading.value = true
+  }, 2000)
+}
 </script>
 
 <style lang="scss" scoped>

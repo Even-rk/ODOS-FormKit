@@ -97,7 +97,7 @@ import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
 // 单行文本框
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 
 // 表单数据
@@ -186,67 +186,61 @@ const reset = () => {
   }) as FormKitData[]
 }
 // 表单值
-// 预防侦听超过递归限制 Maximum
-const isNext = ref(true)
+const initVal = async () => {
+  if (isRequired.value) {
+    await updateError(false)
+    emit('update:value', FormValue.value)
+  } else {
+    FormValue.value = FormValue.value.map((i, index) => {
+      if (props.formData![index].parentId) {
+        // 找到父级
+        const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
+        // 如果选中了父级，返回选项和内容
+        const flag = target?.optionsList?.some((el) => {
+          return props.formData![index].parentOptionsId?.includes(el)
+        })
+        if (flag) {
+          return i
+        } else {
+          return {
+            questionId: i.questionId,
+            optionsList: [],
+            content: ''
+          }
+        }
+      } else {
+        return i
+      }
+    })
+    emit('update:value', FormValue.value)
+  }
+}
+
+watch(props.value, () => initVal(), { deep: true, immediate: false })
 watch(
   FormValue,
-  async (newValue) => {
-    if (isRequired.value) {
-      await updateError(false)
-      emit('update:value', newValue)
-    } else if (isNext.value) {
-      isNext.value = false
-      FormValue.value = FormValue.value.map((i, index) => {
-        if (props.formData![index].parentId) {
-          // 找到父级
-          const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
-          // 如果选中了父级，返回选项和内容
-          const flag = target?.optionsList?.some((el) => {
-            return props.formData![index].parentOptionsId?.includes(el)
-          })
-          if (flag) {
-            return i
-          } else {
-            return {
-              questionId: i.questionId,
-              optionsList: [],
-              content: ''
-            }
-          }
-        } else {
-          return i
-        }
-      })
-      emit('update:value', FormValue.value)
-      setTimeout(() => {
-        isNext.value = true
-      }, 500)
-    } else {
-      emit('update:value', newValue)
-    }
+  () => {
+    emit('update:value', FormValue.value)
   },
   { deep: true, immediate: false }
 )
 // 侦听
-const timer = ref()
 watch(
-  () => props,
-  (newVal) => {
-    clearTimeout(timer.value)
-    timer.value = setTimeout(() => {
-      // 处理回显数据
-      if (newVal.value && newVal.value?.length > 0) {
-        FormValue.value = newVal.formData?.map((i, index) => {
+  () => props.formData,
+  () => {
+    nextTick(() => {
+      if (props.value && props.value?.length > 0) {
+        FormValue.value = props.formData?.map((i, index) => {
           return {
-            questionId: newVal.value[index] ? newVal.value[index].questionId : i.id,
-            optionsList: newVal.value[index] ? newVal.value[index].optionsList : [],
-            content: newVal.value[index] ? newVal.value[index].content : ''
+            questionId: props.value[index] ? props.value[index].questionId : i.id,
+            optionsList: props.value[index] ? props.value[index].optionsList : [],
+            content: props.value[index] ? props.value[index].content : ''
           }
         }) as FormKitData[]
       }
       // 没有回显数据，初始化数据
       else {
-        FormValue.value = newVal.formData?.map((i) => {
+        FormValue.value = props.formData?.map((i) => {
           return {
             questionId: i.id,
             optionsList: [],
@@ -254,9 +248,9 @@ watch(
           }
         }) as FormKitData[]
       }
-    }, 500)
+    })
   },
-  { deep: true }
+  { deep: true, immediate: true }
 )
 // 暴露方法
 defineExpose({ submit, reset })
