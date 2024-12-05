@@ -75,7 +75,10 @@
           />
         </template>
         <!-- 校验提示 -->
-        <div class="validationMessage" v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired">
+        <div
+          class="validationMessage"
+          v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired"
+        >
           {{ i.validationMessage || '请选择' }}
         </div>
       </FormItem>
@@ -97,7 +100,7 @@ import Select from './select/select.vue'
 // 多行文本框
 import Textarea from './textarea/textarea.vue'
 // 单行文本框
-import { nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 
 // 表单数据
@@ -194,7 +197,9 @@ const initVal = async () => {
     FormValue.value = FormValue.value.map((i, index) => {
       if (props.formData![index].parentId) {
         // 找到父级
-        const target = FormValue.value.find((el) => el.questionId == props.formData![index].parentId)
+        const target = FormValue.value.find((el) => {
+          return el.questionId == props.formData![index].parentId
+        })
         // 如果选中了父级，返回选项和内容
         const flag = target?.optionsList?.some((el) => {
           return props.formData![index].parentOptionsId?.includes(el)
