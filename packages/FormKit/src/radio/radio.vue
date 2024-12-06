@@ -173,7 +173,7 @@ const RadioItem = (list: Item[]) => {
 
     &.disabled {
       cursor: not-allowed;
-      color: #444444;
+      color: #fff;
 
       &:hover {
         background: #999999;
