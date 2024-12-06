@@ -1,6 +1,6 @@
 {
   "name": "odos-form-kit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": false,
   "type": "module",
   "main": "lib/odos-form-kit.umd.js",
