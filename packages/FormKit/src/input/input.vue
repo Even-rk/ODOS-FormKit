@@ -28,12 +28,13 @@ const emit = defineEmits<{
   (e: 'input' | 'focus' | 'change' | 'blur', data: Event): void
 }>()
 
-const { value, placeholder, disabled, type } = defineProps<{
+const { value, placeholder, disabled, type, maxlength } = defineProps<{
   type?: 'text' | 'password' | 'search'
   value?: string
   placeholder?: string
   disabled?: boolean
   theme?: 'light' | 'dark'
+  maxlength?: number
 }>()
 const Type = ref(type)
 // typeName
@@ -63,7 +64,11 @@ const iconClick = () => {
 }
 // 处理input事件
 const handleInput = (e: Event) => {
-  emit('update:value', (e.target as HTMLInputElement).value)
+  if (maxlength) {
+    emit('update:value', (e.target as HTMLInputElement).value.slice(0, maxlength))
+  } else {
+    emit('update:value', (e.target as HTMLInputElement).value)
+  }
 }
 </script>
 

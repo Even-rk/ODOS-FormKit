@@ -102,6 +102,7 @@ const CheckBoxItem = (list: Item[]) => {
           value={props.content}
           class="odos-check-box-input"
           placeholder="请输入"
+          maxlength={50}
           onInput={(e) => {
             emit('update:content', (e.target as HTMLInputElement).value)
           }}

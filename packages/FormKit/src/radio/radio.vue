@@ -72,6 +72,7 @@ const RadioItem = (list: Item[]) => {
         <input
           class="odos-radio-box-input"
           placeholder="请输入"
+          maxlength={50}
           onInput={(e) => {
             emit('update:content', (e.target as HTMLInputElement).value)
           }}
