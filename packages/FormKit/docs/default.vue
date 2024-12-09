@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch, watchEffect } from 'vue'
 import { Button } from 'ant-design-vue'
 import type { FormKitData, FormKitType } from '../../../types/form'
 import data from '../data'
@@ -121,6 +121,10 @@ onMounted(async () => {
     }, 1000)
   })
 })
+
+watch(formKitData, () => {
+  console.log(formKitData.value)
+}, { deep: true })
 
 const subMit = () => {
   loading.value = false

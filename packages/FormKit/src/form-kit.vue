@@ -6,7 +6,7 @@
         required: errorList.some((el) => el.questionId == i.id) && i.hasRequired
       }"
       v-for="(i, index) in formData"
-      :key="index"
+      :key="i.id"
     >
       <FormItem
         :labelPosition="i.parentId ? 'top' : 'left'"
@@ -14,7 +14,7 @@
         :label="i.name"
         :required="i.hasRequired"
         :label-width="labelWidth"
-        v-if="!i.parentId || isShow(i.parentId, i.parentOptionsId)"
+        v-if="!i.parentId || isShow(i.parentId, i.parentOptionsId, i.id)"
       >
         <!-- 下拉框 -->
         <template v-if="i.type == '下拉框'">
@@ -75,10 +75,7 @@
           />
         </template>
         <!-- 校验提示 -->
-        <div
-          class="validationMessage"
-          v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired"
-        >
+        <div class="validationMessage" v-if="errorList.some((el) => el.questionId == i.id) && i.hasRequired">
           {{ i.validationMessage || '请选择' }}
         </div>
       </FormItem>
@@ -120,7 +117,7 @@ const emit = defineEmits(['update:value'])
 const FormValue = ref<FormKitData[]>([])
 
 // 二级/三级根据上级展示
-const isShow = (parentId?: number, parentOptionsId?: number[]) => {
+const isShow = (parentId?: number, parentOptionsId?: number[], id?: number) => {
   if (parentId && parentOptionsId) {
     // 找到父级
     const target = FormValue.value.find((i) => i.questionId == parentId)
@@ -129,6 +126,8 @@ const isShow = (parentId?: number, parentOptionsId?: number[]) => {
     if (list?.length) {
       return true
     } else {
+      // 处理二级选项的清除问题
+      FormValue.value.find((i) => i.questionId == id)!.optionsList = []
       return false
     }
   } else {
