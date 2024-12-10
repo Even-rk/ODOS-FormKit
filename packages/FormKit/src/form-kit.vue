@@ -128,6 +128,7 @@ const isShow = (parentId?: number, parentOptionsId?: number[], id?: number) => {
     } else {
       // 处理二级选项的清除问题
       FormValue.value.find((i) => i.questionId == id)!.optionsList = []
+      FormValue.value.find((i) => i.questionId == id)!.content = ''
       return false
     }
   } else {
