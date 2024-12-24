@@ -265,7 +265,7 @@ defineExpose({ submit, reset })
 .odos-formkit {
   width: 100%;
   .odos-formkit-item {
-    margin: 12px 0;
+    margin: 16px 0;
     width: 100%;
     &:first-child {
       margin-top: 0;
