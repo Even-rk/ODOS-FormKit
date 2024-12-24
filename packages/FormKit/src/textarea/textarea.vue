@@ -35,9 +35,12 @@ const $input = (e: ChangeEvent) => {
 
 <style lang="scss" scoped>
 .odos-textarea {
+  position: relative;
   .length {
+    position: absolute;
+    right: 0;
+    bottom: -15px;
     line-height: 12px;
-    float: right;
     font-size: 12px;
     color: #86909c;
   }
