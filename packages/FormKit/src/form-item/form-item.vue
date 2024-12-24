@@ -13,7 +13,7 @@
     </div>
     <div class="label" v-if="labelPosition == 'top'">
       <div class="required" v-if="required">*</div>
-      {{ label }}
+      {{ label }}：
     </div>
     <div
       class="value"
